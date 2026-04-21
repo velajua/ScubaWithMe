@@ -15,7 +15,7 @@ working/current-png/
 Comparison output folder:
 
 ```text
-exports/print-tests/final-template-comparison/
+exports/print-tests/chainner_output/
 ```
 
 The chains save 16-bit PNG files so we keep more tonal room during review.
@@ -29,7 +29,7 @@ cmd /c python chainner-template-helper.py update working\current-png\moray1.png
 That updates all three `.chn` files so the load node points at `moray1.png` and the save nodes write under:
 
 ```text
-exports/print-tests/final-template-comparison/moray1/
+exports/print-tests/chainner_output/moray1/
 ```
 
 ## Template 01: Natural Print Prep
@@ -58,7 +58,7 @@ cmd /c ""%CHAINNER_EXE%" run "%CD%\workflows\scubawithme-template-01-natural-pri
 Example output for `fish1.png`:
 
 ```text
-exports/print-tests/final-template-comparison/fish1/template-01-natural-print/fish1-t01-natural-print-prep-3x.png
+exports/print-tests/chainner_output/fish1/template-01-natural-print/fish1-t01-natural-print-prep-3x.png
 ```
 
 ## Template 02: Clean Product Prep
@@ -87,7 +87,7 @@ cmd /c ""%CHAINNER_EXE%" run "%CD%\workflows\scubawithme-template-02-clean-produ
 Example output for `fish1.png`:
 
 ```text
-exports/print-tests/final-template-comparison/fish1/template-02-clean-product/fish1-t02-clean-product-prep-4x.png
+exports/print-tests/chainner_output/fish1/template-02-clean-product/fish1-t02-clean-product-prep-4x.png
 ```
 
 ## Template 03: Vivid Reef Grade
@@ -117,7 +117,7 @@ cmd /c ""%CHAINNER_EXE%" run "%CD%\workflows\scubawithme-template-03-vivid-reef-
 Example output for `fish1.png`:
 
 ```text
-exports/print-tests/final-template-comparison/fish1/template-03-vivid-reef/fish1-t03-vivid-reef-grade-3x.png
+exports/print-tests/chainner_output/fish1/template-03-vivid-reef/fish1-t03-vivid-reef-grade-3x.png
 ```
 
 ## Run One Image

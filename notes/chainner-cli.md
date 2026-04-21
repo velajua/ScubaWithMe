@@ -47,6 +47,7 @@ Important quirks:
 - The CLI can override text, number, file, and directory inputs, but dropdowns, checkboxes, and generic inputs should be fixed inside the saved chain.
 - Hand-authored `.chn` files may warn that the save file was tampered with because the GUI checksum is missing. The chain can still run, but production workflows should be saved from the GUI once finalized.
 - Current templates use deterministic resize, color grading, denoise, and sharpening. They do not use AI super-resolution yet.
+- `chainner-template-helper.py` keeps the saved templates privacy-safe and creates temporary runtime chains under `.chainner-runtime/` when chaiNNer needs absolute paths.
 
 Current workflow docs:
 

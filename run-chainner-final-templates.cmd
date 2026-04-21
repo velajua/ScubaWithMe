@@ -18,4 +18,4 @@ ping -n 21 127.0.0.1 > nul
 start /wait "" "%CHAINNER_EXE%" run "%ROOT%workflows\scubawithme-template-03-vivid-reef-grade.chn" > "%LOGDIR%\scubawithme-template-03-vivid-reef-grade.log" 2>&1
 ping -n 21 127.0.0.1 > nul
 
-echo Done. Review outputs in "%ROOT%exports\print-tests\final-template-comparison".
+echo Done. Review outputs in "%ROOT%exports\print-tests\chainner_output".
