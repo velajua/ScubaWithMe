@@ -1,191 +1,118 @@
-# Real-ESRGAN Print-Test Workflow
+# RealESRNet + chaiNNer Workflow
 
-This workflow runs Real-ESRGAN first on the smaller working PNG images. The ESRGAN outputs can then be used as inputs for the chaiNNer print-prep templates.
-
-Input folder:
+This is the current ScubaWithMe print-test workflow.
 
 ```text
 working/current-png/
+-> PyTorch RealESRNet 2x
+-> chaiNNer correction templates
+-> manual visual review and tier decision
 ```
 
-Output folder:
+RealESRNet does the resolution/restoration step. chaiNNer does color, contrast, denoise, and finishing only. The chaiNNer templates should not enlarge the image again.
+
+## Current Outputs
+
+RealESRNet 2x outputs:
 
 ```text
-exports/print-tests/ESRGAN/
+exports/print-tests/ESRGAN-pytorch-RealESRNet/
 ```
 
-By default, output filenames preserve the original image names, for example:
+chaiNNer corrected variants:
 
 ```text
-working/current-png/fish1.png
-exports/print-tests/ESRGAN/fish1.png
+exports/print-tests/chainner_from_realesrnet/<image-name>/<image-name>-tXX-variant.png
 ```
 
-The goal is comparison and print testing, not automatic print approval. ESRGAN can improve apparent resolution, but it can also invent animal detail, sharpen backscatter, create halos, or shift fine reef textures. Treat these outputs as candidates that still need visual inspection and sample-print judgment.
+## Runtime Setup
 
-## Setup Used
-
-The project root contains:
+The full Python/PyTorch Real-ESRGAN environment lives in ignored runtime state:
 
 ```text
-Real-ESRGAN/
+.realesrgan-runtime/venv/
 ```
 
-That is a clone of:
+Model weights live in the ignored Real-ESRGAN clone:
 
 ```text
-https://github.com/xinntao/Real-ESRGAN
+Real-ESRGAN/weights/RealESRNet_x4plus.pth
+Real-ESRGAN/weights/RealESRGAN_x4plus.pth
 ```
 
-For local Windows runs, this workflow uses the official portable executable from the Real-ESRGAN releases:
+Runtime logs are written under:
 
 ```text
-tools/realesrgan-ncnn-vulkan.exe
-tools/models/
+.realesrgan-runtime/logs/
+.chainner-runtime/logs/
 ```
 
-This avoids installing the full Python/PyTorch environment while still using Real-ESRGAN's released upscaling models.
+These paths are ignored by git.
 
-## Run The Workflow
+## Run RealESRNet
 
-Default 2x pass:
+Run the current conservative restoration/upscale model over the working PNG folder:
 
 ```cmd
-cmd /c run-esrgan-print-tests.cmd
+cmd /c "set PY_ESRGAN_MODEL=RealESRNet_x4plus&& set PY_ESRGAN_OUTPUT=exports\print-tests\ESRGAN-pytorch-RealESRNet&& set PY_ESRGAN_SUFFIX=realesrnet-2x&& run-realesrgan-python.cmd working\current-png"
 ```
 
-3x pass:
+Run one image:
 
 ```cmd
-cmd /c run-esrgan-print-tests.cmd 3
+cmd /c "set PY_ESRGAN_MODEL=RealESRNet_x4plus&& set PY_ESRGAN_OUTPUT=exports\print-tests\ESRGAN-pytorch-RealESRNet&& set PY_ESRGAN_SUFFIX=realesrnet-2x&& run-realesrgan-python.cmd working\current-png\squid1.png"
 ```
 
-4x pass:
+The default scale is `2x`. Use larger scales only for selected images that survive visual inspection.
+
+## Run chaiNNer Corrections
+
+Run all correction templates over the RealESRNet outputs:
 
 ```cmd
-cmd /c run-esrgan-print-tests.cmd 4
+cmd /c "python chainner-template-helper.py --output-root exports\print-tests\chainner_from_realesrnet run-folder exports\print-tests\ESRGAN-pytorch-RealESRNet"
 ```
 
-The default is 2x because these source files are still small, but underwater detail can become artificial quickly. Use 3x or 4x only for selected images that survive visual inspection.
+Regenerate existing corrected outputs:
 
-Important implementation detail:
+```cmd
+cmd /c "python chainner-template-helper.py --output-root exports\print-tests\chainner_from_realesrnet run-folder exports\print-tests\ESRGAN-pytorch-RealESRNet --regenerate"
+```
 
-- The helper converts inputs to RGB before calling Real-ESRGAN.
-- The helper uses `--tile 128` by default instead of Real-ESRGAN's auto tile mode.
-- This avoids fragmented/tile-scrambled output seen when the portable Vulkan runner processed the original `RGBA` PNGs on this Windows GPU path.
+## Templates
 
-Prepared RGB inputs are temporary files written under:
+- `template-01-natural-print`: moderate natural correction.
+- `template-02-clean-product`: brighter product-style correction.
+- `template-03-vivid-reef`: stylized high-impact correction; use cautiously for print.
+- `template-04-subtle-esrgan-finish`: restrained post-ESRGAN finish intended to preserve the moody underwater look.
+- `template-05-cinematic-deep-blue`: moody deep-blue grade with stronger contrast and sharper drama.
+- `template-06-bright-product-pop`: high-key, brighter product-style grade with more saturation.
+- `template-07-matte-dream-water`: soft, lower-contrast, denoised matte grade for atmospheric frames.
+- `template-08-hard-detail-clarity`: aggressive detail/edge test for subjects that can survive sharpening.
+- `template-09-warm-coral-recovery`: warmer, coral-forward grade that tests stronger red/orange recovery.
+
+Normal `run-one` and `run-folder` executions use temporary runtime chains and should not rewrite the saved workflow templates.
+
+Output layout is intentionally flat inside each image folder. Do not create per-template subfolders:
 
 ```text
-exports/print-tests/ESRGAN-runtime/
-```
-
-ESRGAN also writes each generated output to a temporary file under that runtime folder first, then replaces the final output only after the command succeeds. This avoids keeping a partial or stale final PNG if an upscale is interrupted.
-
-Smoke test one new output:
-
-```cmd
-cmd /c run-esrgan-print-tests.cmd --limit 1
-```
-
-The workflow is resumable. Existing ESRGAN outputs are skipped unless overwrite mode is enabled, so it is safe to stop a long run and launch it again later.
-
-Preview what would run without creating files:
-
-```cmd
-cmd /c run-esrgan-print-tests.cmd --dry-run
-```
-
-Run only one image group:
-
-```cmd
-cmd /c run-esrgan-print-tests.cmd --only fish1
-```
-
-For fuzzy matches, use a glob:
-
-```cmd
-cmd /c run-esrgan-print-tests.cmd --only "*vivid-reef*"
-```
-
-Run only the natural-print template across all images:
-
-```cmd
-cmd /c run-esrgan-print-tests.cmd --only template-01-natural-print
-```
-
-Run one selected image/template combination:
-
-```cmd
-cmd /c run-esrgan-print-tests.cmd --only fish1.png
-```
-
-If you want filenames that include model and scale instead of preserving the source filename:
-
-```cmd
-cmd /c run-esrgan-print-tests.cmd --only fish1.png --descriptive-names
-```
-
-To experiment with another tile size:
-
-```cmd
-cmd /c run-esrgan-print-tests.cmd --only fish1.png --tile 256
-```
-
-Do not use `--no-rgb-preflight` unless you are intentionally testing the Real-ESRGAN runner behavior. The current working PNGs are `RGBA`, and direct RGBA input produced broken image geometry during testing.
-
-## Feeding ESRGAN Into chaiNNer
-
-The chaiNNer helper can still run from the original working PNG images:
-
-```cmd
-cmd /c "python chainner-template-helper.py run-folder"
-```
-
-To run chaiNNer from the ESRGAN-upscaled images instead, pass the ESRGAN folder:
-
-```cmd
-cmd /c "python chainner-template-helper.py --output-root exports\print-tests\chainner_from_esrgan run-folder exports\print-tests\ESRGAN"
-```
-
-`run-folder` reads image files directly inside the folder. Nested comparison folders from older experiments are ignored.
-
-## Optional Model Choice
-
-Default model:
-
-```text
-realesrgan-x4plus
-```
-
-Alternative natural-image baseline:
-
-```cmd
-cmd /c "set ESRGAN_MODEL=realesrnet-x4plus&& run-esrgan-print-tests.cmd"
-```
-
-Use `realesrgan-x4plus` for sharper detail experiments. Try `realesrnet-x4plus` if the default model looks too crunchy, haloed, or artificial around fish edges and coral textures.
-
-## Re-running
-
-By default, existing ESRGAN outputs are skipped so previous comparisons are preserved.
-
-To overwrite existing ESRGAN outputs:
-
-```cmd
-cmd /c "set ESRGAN_OVERWRITE=1&& run-esrgan-print-tests.cmd"
-```
-
-Run logs are written to:
-
-```text
-notes/esrgan-print-test.log
+exports/print-tests/chainner_from_realesrnet/
+  squid1_realesrnet-2x/
+    squid1_realesrnet-2x-t01-natural-print-corrected.png
+    squid1_realesrnet-2x-t02-clean-product-corrected.png
+    squid1_realesrnet-2x-t03-vivid-reef-corrected.png
+    squid1_realesrnet-2x-t04-subtle-esrgan-finish-corrected.png
+    squid1_realesrnet-2x-t05-cinematic-deep-blue-corrected.png
+    squid1_realesrnet-2x-t06-bright-product-pop-corrected.png
+    squid1_realesrnet-2x-t07-matte-dream-water-corrected.png
+    squid1_realesrnet-2x-t08-hard-detail-clarity-corrected.png
+    squid1_realesrnet-2x-t09-warm-coral-recovery-corrected.png
 ```
 
 ## Review Checklist
 
 - Check eyes, skin/scales, coral, and sand for invented texture.
 - Look for halos around fish edges, fins, antennae, and high-contrast reef shapes.
-- Compare against the chaiNNer output at the same crop, not only zoomed out.
+- Compare at crop level, not only full-frame.
 - Reject outputs where the image looks more detailed but less believable.
-- Prefer smaller print sizes until a real sample confirms the result holds up.
+- Prefer smaller print sizes until a real sample confirms the result.

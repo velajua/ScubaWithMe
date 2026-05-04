@@ -23,7 +23,6 @@ IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tif", ".tiff", ".webp"}
 class Template:
     path: Path
     label: str
-    output_folder: str
     output_suffix: str
 
 
@@ -31,20 +30,47 @@ TEMPLATES = [
     Template(
         path=ROOT / "workflows" / "scubawithme-template-01-natural-print-prep.chn",
         label="template-01-natural-print-prep",
-        output_folder="template-01-natural-print",
-        output_suffix="t01-natural-print-prep-3x",
+        output_suffix="t01-natural-print-corrected",
     ),
     Template(
         path=ROOT / "workflows" / "scubawithme-template-02-clean-product-prep.chn",
         label="template-02-clean-product-prep",
-        output_folder="template-02-clean-product",
-        output_suffix="t02-clean-product-prep-4x",
+        output_suffix="t02-clean-product-corrected",
     ),
     Template(
         path=ROOT / "workflows" / "scubawithme-template-03-vivid-reef-grade.chn",
         label="template-03-vivid-reef-grade",
-        output_folder="template-03-vivid-reef",
-        output_suffix="t03-vivid-reef-grade-3x",
+        output_suffix="t03-vivid-reef-corrected",
+    ),
+    Template(
+        path=ROOT / "workflows" / "scubawithme-template-04-subtle-esrgan-finish.chn",
+        label="template-04-subtle-esrgan-finish",
+        output_suffix="t04-subtle-esrgan-finish-corrected",
+    ),
+    Template(
+        path=ROOT / "workflows" / "scubawithme-template-05-cinematic-deep-blue.chn",
+        label="template-05-cinematic-deep-blue",
+        output_suffix="t05-cinematic-deep-blue-corrected",
+    ),
+    Template(
+        path=ROOT / "workflows" / "scubawithme-template-06-bright-product-pop.chn",
+        label="template-06-bright-product-pop",
+        output_suffix="t06-bright-product-pop-corrected",
+    ),
+    Template(
+        path=ROOT / "workflows" / "scubawithme-template-07-matte-dream-water.chn",
+        label="template-07-matte-dream-water",
+        output_suffix="t07-matte-dream-water-corrected",
+    ),
+    Template(
+        path=ROOT / "workflows" / "scubawithme-template-08-hard-detail-clarity.chn",
+        label="template-08-hard-detail-clarity",
+        output_suffix="t08-hard-detail-clarity-corrected",
+    ),
+    Template(
+        path=ROOT / "workflows" / "scubawithme-template-09-warm-coral-recovery.chn",
+        label="template-09-warm-coral-recovery",
+        output_suffix="t09-warm-coral-recovery-corrected",
     ),
 ]
 
@@ -122,26 +148,17 @@ def update_chain_data(
 
     save_input = save_node["data"]["inputData"]
     save_input["1"] = chainner_path(output_root, absolute=absolute)
-    save_input["2"] = f"{stem}/{template.output_folder}"
+    save_input["2"] = stem
     save_input["3"] = f"{stem}-{template.output_suffix}"
 
-    return output_root / stem / template.output_folder / f"{stem}-{template.output_suffix}.png"
+    return output_root / stem / f"{stem}-{template.output_suffix}.png"
 
 
-def update_template(template: Template, image: Path, output_root: Path) -> Path:
-    chain = json.loads(template.path.read_text(encoding="utf-8"))
-    output = update_chain_data(
-        chain,
-        template,
-        image,
-        output_root,
-        absolute=False,
-    )
-    template.path.write_text(
-        json.dumps(chain, separators=(",", ":")),
-        encoding="utf-8",
-    )
-    return output
+def expected_output(template: Template, image: Path, output_root: Path) -> Path:
+    image = image.resolve()
+    output_root = output_root.resolve()
+    stem = image_stem(image)
+    return output_root / stem / f"{stem}-{template.output_suffix}.png"
 
 
 def create_runtime_chain(template: Template, image: Path, output_root: Path) -> Path:
@@ -159,24 +176,13 @@ def create_runtime_chain(template: Template, image: Path, output_root: Path) -> 
     return runtime_path
 
 
-def update_all_templates(image: Path, output_root: Path) -> list[Path]:
+def expected_outputs(image: Path, output_root: Path) -> list[Path]:
     image = image.resolve()
     if not image.exists():
         raise FileNotFoundError(f"Image not found: {image}")
     if image.suffix.lower() not in IMAGE_EXTENSIONS:
         raise ValueError(f"Unsupported image extension: {image.suffix}")
-    try:
-        image.relative_to(ROOT)
-    except ValueError:
-        print(
-            "Warning: this input is outside the project, so its absolute path must be written to the chaiNNer file.",
-            file=sys.stderr,
-        )
-
-    outputs = []
-    for template in TEMPLATES:
-        outputs.append(update_template(template, image, output_root))
-    return outputs
+    return [expected_output(template, image, output_root) for template in TEMPLATES]
 
 
 def output_is_stable(path: Path, checks: int = 3, interval: float = 1.0) -> bool:
@@ -235,17 +241,18 @@ def run_template(
     skip_existing: bool,
     timeout_seconds: int,
 ) -> int:
-    LOG_DIR.mkdir(parents=True, exist_ok=True)
-    log_path = LOG_DIR / f"chainner-{image_stem(image)}-{template.label}.log"
-
     if skip_existing and output_is_stable(expected_output, checks=1, interval=0.2):
         print(f"Skipping existing {display_path(expected_output)}")
         return 0
 
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    log_path = LOG_DIR / f"chainner-{image_stem(image)}-{template.label}.log"
+
     if expected_output.exists():
         expected_output.unlink()
 
-    runtime_chain = create_runtime_chain(template, image, expected_output.parents[2])
+    runtime_chain = create_runtime_chain(template, image, expected_output.parents[1])
+    code = 1
 
     with log_path.open("w", encoding="utf-8") as log:
         process = subprocess.Popen(
@@ -258,18 +265,24 @@ def run_template(
         deadline = time.monotonic() + timeout_seconds
         while time.monotonic() < deadline:
             if output_is_stable(expected_output):
-                stop_process_tree(process.pid)
-                cleanup_chainner_backends()
-                runtime_chain.unlink(missing_ok=True)
-                log_path.unlink(missing_ok=True)
-                return 0
+                code = 0
+                break
 
             time.sleep(1)
 
         stop_process_tree(process.pid)
         cleanup_chainner_backends()
         runtime_chain.unlink(missing_ok=True)
-        return 1
+
+    if code == 0:
+        log_path.unlink(missing_ok=True)
+        for folder in (LOG_DIR, RUNTIME_DIR):
+            try:
+                folder.rmdir()
+            except OSError:
+                pass
+
+    return code
 
 
 def run_for_image(
@@ -280,8 +293,8 @@ def run_for_image(
     keep_going: bool,
     timeout_seconds: int,
 ) -> tuple[list[Path], list[str]]:
-    outputs = update_all_templates(image, output_root)
-    print(f"Updated templates for {image.name}")
+    outputs = expected_outputs(image, output_root)
+    print(f"Prepared runtime chains for {image.name}")
 
     failures = []
     for template, output in zip(TEMPLATES, outputs):
@@ -316,7 +329,7 @@ def iter_images(folder: Path) -> list[Path]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Update and run ScubaWithMe chaiNNer final-product templates."
+        description="Run ScubaWithMe chaiNNer final-product templates with temporary runtime chains."
     )
     parser.add_argument(
         "--output-root",
@@ -332,10 +345,7 @@ def parse_args() -> argparse.Namespace:
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    update = subparsers.add_parser("update", help="Update templates for one image.")
-    update.add_argument("image", help="Image path to use as the chain input.")
-
-    run_one = subparsers.add_parser("run-one", help="Update and run all templates for one image.")
+    run_one = subparsers.add_parser("run-one", help="Run all templates for one image.")
     run_one.add_argument("image", help="Image path to process.")
     run_one.add_argument(
         "--skip-existing",
@@ -366,13 +376,6 @@ def main() -> int:
     output_root = Path(args.output_root)
 
     try:
-        if args.command == "update":
-            outputs = update_all_templates(Path(args.image), output_root)
-            print("Updated templates. Expected outputs:")
-            for output in outputs:
-                print(display_path(output))
-            return 0
-
         if args.command == "run-one":
             outputs, failures = run_for_image(
                 Path(args.image),
