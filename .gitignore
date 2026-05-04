@@ -12,3 +12,6 @@ AGENTS.md
 Real-ESRGAN/
 tools/
 downloads/
+
+__pycache__/
+.pytest_cache/

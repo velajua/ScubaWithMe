@@ -10,6 +10,10 @@ Generated comparison renders for the chaiNNer exports. These are review aids, no
 ## Per-Image Sheets
 
 - [fish10_realesrnet-2x-crispness-review](exports/print-tests/render-review/fish10_realesrnet-2x-crispness-review.png)
+- [fish11_realesrnet-2x-crispness-review](exports/print-tests/render-review/fish11_realesrnet-2x-crispness-review.png)
+- [fish12_realesrnet-2x-crispness-review](exports/print-tests/render-review/fish12_realesrnet-2x-crispness-review.png)
+- [fish13_realesrnet-2x-crispness-review](exports/print-tests/render-review/fish13_realesrnet-2x-crispness-review.png)
+- [fish14_realesrnet-2x-crispness-review](exports/print-tests/render-review/fish14_realesrnet-2x-crispness-review.png)
 - [fish1_realesrnet-2x-crispness-review](exports/print-tests/render-review/fish1_realesrnet-2x-crispness-review.png)
 - [fish2_realesrnet-2x-crispness-review](exports/print-tests/render-review/fish2_realesrnet-2x-crispness-review.png)
 - [fish3_realesrnet-2x-crispness-review](exports/print-tests/render-review/fish3_realesrnet-2x-crispness-review.png)
@@ -22,6 +26,10 @@ Generated comparison renders for the chaiNNer exports. These are review aids, no
 - [moray1_realesrnet-2x-crispness-review](exports/print-tests/render-review/moray1_realesrnet-2x-crispness-review.png)
 - [moray2_realesrnet-2x-crispness-review](exports/print-tests/render-review/moray2_realesrnet-2x-crispness-review.png)
 - [moray3_realesrnet-2x-crispness-review](exports/print-tests/render-review/moray3_realesrnet-2x-crispness-review.png)
+- [shark1_realesrnet-2x-crispness-review](exports/print-tests/render-review/shark1_realesrnet-2x-crispness-review.png)
+- [shark2_realesrnet-2x-crispness-review](exports/print-tests/render-review/shark2_realesrnet-2x-crispness-review.png)
+- [shark3_realesrnet-2x-crispness-review](exports/print-tests/render-review/shark3_realesrnet-2x-crispness-review.png)
+- [shark4_realesrnet-2x-crispness-review](exports/print-tests/render-review/shark4_realesrnet-2x-crispness-review.png)
 - [squid1_realesrnet-2x-crispness-review](exports/print-tests/render-review/squid1_realesrnet-2x-crispness-review.png)
 - [star1_realesrnet-2x-crispness-review](exports/print-tests/render-review/star1_realesrnet-2x-crispness-review.png)
 - [star2_realesrnet-2x-crispness-review](exports/print-tests/render-review/star2_realesrnet-2x-crispness-review.png)
