@@ -1,0 +1,19 @@
+{
+  "bubble_density_percent": 55,
+  "bubble_opacity_percent": 55,
+  "bubble_overlay": false,
+  "curve_percent": 0,
+  "fill_hex": "#fffff5",
+  "font_name": "ScubaWithMe Logo Script",
+  "opacity_percent": 100,
+  "overlay_opacity_percent": 75,
+  "overlay_path": "exports/shopify/brand/apple-touch-icon-180.png",
+  "overlay_size_percent": 9,
+  "overlay_x_percent": 95,
+  "overlay_y_percent": 95,
+  "size_percent": 23,
+  "stroke_hex": "#021e2d",
+  "text": "ScubaWithMe",
+  "x_percent": 50,
+  "y_percent": 10
+}
