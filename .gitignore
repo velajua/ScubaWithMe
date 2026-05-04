@@ -1,10 +1,12 @@
 .chainner-runtime/
+.realesrgan-runtime/
 notes/*.log
 
 working/
 exports/
 
 .codex/
+.superpowers/
 AGENTS.md
 
 Real-ESRGAN/
