@@ -5,6 +5,7 @@ This folder holds working notes for the ScubaWithMe brand, image-quality pipelin
 ## Current structure
 
 - `brand/`: active brand direction, asset usage, and implementation notes
+- `story/`: character narrative, daily comic workflow, story arcs, and episode engines
 - `workflows/`: workflow-specific plans and implementation notes
 - `esrgan-print-test-workflow.md`: current RealESRNet 2x plus chaiNNer correction workflow
 - `chainner-crispness-render-review.md`: visual review notes for chaiNNer crispness variants
@@ -15,6 +16,15 @@ This folder holds working notes for the ScubaWithMe brand, image-quality pipelin
 - `brand/assets.md`: exported brand assets and Shopify usage notes
 - `brand/implementation-plan.md`: record of the first brand asset build
 - `brand/README.md`: quick overview of the brand notes section
+
+## Story notes
+
+- `story/README.md`: index for the ScubaWithMe story system
+- `story/series-bible.md`: central premise, emotional arc, story rules, and brand fit
+- `story/characters.md`: main cast, side characters, dynamics, and running jokes
+- `story/story-arcs.md`: season-scale arcs and character adventure arcs
+- `story/episode-engines.md`: repeatable 4-frame story formulas and episode seeds
+- `story/daily-workflow.md`: daily posting workflow for the character content loop
 
 ## Workflow helpers
 
