@@ -107,7 +107,7 @@ Purpose: Teach animal body language.
 1. A small fish turns away from the diver.
 2. The quiet diver lowers the camera.
 3. Grumpy Fish asks if the fish said something.
-4. Turtle says, "It moved away. That is a sentence."
+4. Turtle says, "It moved away. That's growth."
 
 Final turn: tiny ocean truth.
 
@@ -125,4 +125,3 @@ Purpose: Close with the biggest rule: the reef continues without humans.
 4. Turtle says, "The reef was busy before anyone arrived."
 
 Final turn: brand thesis.
-
