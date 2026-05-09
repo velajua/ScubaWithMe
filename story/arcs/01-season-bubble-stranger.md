@@ -77,7 +77,7 @@ Purpose: Show why the reef is suspicious.
 1. A careless diver kicks sand across the reef.
 2. Grumpy Fish disappears in a cloud of sand.
 3. Turtle waits for the water to clear.
-4. Grumpy Fish says, "I have become weather."
+4. Grumpy Fish says, "Great. Now I'm under the weather."
 
 Final turn: funny, but with real disturbance.
 
@@ -125,4 +125,3 @@ Purpose: Close the first arc without making the animals naive.
 4. Shark says, "But behavior is evidence."
 
 Final turn: the season thesis.
-

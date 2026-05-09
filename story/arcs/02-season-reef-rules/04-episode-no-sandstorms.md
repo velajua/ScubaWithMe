@@ -22,7 +22,7 @@ Text: `FWOOM`
 
 Visual: Grumpy Fish emerges covered in sand, eyes huge and furious.
 
-Text: `I have become weather.`
+Text: `Great. Now I'm under the weather.`
 
 ### Panel 4
 

@@ -1,3 +1,5 @@
+.env
+
 .chainner-runtime/
 .realesrgan-runtime/
 notes/*.log
