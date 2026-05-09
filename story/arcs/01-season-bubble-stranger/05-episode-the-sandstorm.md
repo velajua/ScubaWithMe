@@ -28,7 +28,7 @@ Text: `Let it settle.`
 
 Visual: Grumpy Fish emerges covered in sand, furious.
 
-Text: `I have become weather.`
+Text: `Great. Now I'm under the weather.`
 
 ## Final Turn
 
@@ -39,4 +39,3 @@ Funny, but with a real disturbance.
 Final image should be saved in this folder as:
 
 - `05-episode-the-sandstorm.png`
-
